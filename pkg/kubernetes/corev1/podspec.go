@@ -3,7 +3,7 @@ package corev1
 import (
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
+	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
 )
 
 type PodSpecOption func(*corev1.PodSpec)

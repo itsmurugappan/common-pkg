@@ -6,7 +6,7 @@ import (
 
 	"knative.dev/pkg/ptr"
 
-	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
+	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
 )
 
 type containerSpecOption func(*corev1.Container)

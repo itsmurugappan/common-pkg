@@ -6,8 +6,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
-	teststubcorev1 "github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/corev1"
+	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
+	teststubcorev1 "github.com/itsmurugappan/kubernetes-resource-builder/pkg/test/kubernetes/corev1"
 )
 
 func TestEnvFromSecretorCM(t *testing.T) {

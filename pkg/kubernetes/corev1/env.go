@@ -4,7 +4,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"strings"
 
-	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
+	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
 )
 
 func GetEnvfromSecretorCM(envFrom []kubernetes.EnvFrom) []corev1.EnvFromSource {

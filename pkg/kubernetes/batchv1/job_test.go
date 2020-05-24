@@ -6,10 +6,10 @@ import (
 
 	batchv1 "k8s.io/api/batch/v1"
 
-	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
-	corev1 "github.com/itsmurugappan/kubernetes-resource-builder/kubernetes/corev1"
-	teststubbatchv1 "github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/batchv1"
-	teststubcorev1 "github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/corev1"
+	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
+	corev1 "github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes/corev1"
+	teststubbatchv1 "github.com/itsmurugappan/kubernetes-resource-builder/pkg/test/kubernetes/batchv1"
+	teststubcorev1 "github.com/itsmurugappan/kubernetes-resource-builder/pkg/test/kubernetes/corev1"
 )
 
 func TestGetPodSpec(t *testing.T) {

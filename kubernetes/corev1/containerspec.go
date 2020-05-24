@@ -6,12 +6,12 @@ import (
 
 	"knative.dev/pkg/ptr"
 
-	"github.com/itsmurugappan/common-pkg/common/models"
+	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
 )
 
 type containerSpecOption func(*corev1.Container)
 
-func GetContainerSpec(spec models.ContainerSpec, options ...containerSpecOption) corev1.Container {
+func GetContainerSpec(spec kubernetes.ContainerSpec, options ...containerSpecOption) corev1.Container {
 
 	cSpec := corev1.Container{
 		Image: spec.Image,
@@ -30,7 +30,7 @@ func WithEnv(envs []corev1.EnvVar) containerSpecOption {
 	}
 }
 
-func WithEnvFromSecretorCM(envFromSecretorCM []models.EnvFrom) containerSpecOption {
+func WithEnvFromSecretorCM(envFromSecretorCM []kubernetes.EnvFrom) containerSpecOption {
 	return func(container *corev1.Container) {
 		envList := GetEnvfromSecretorCM(envFromSecretorCM)
 		container.EnvFrom = envList
@@ -88,7 +88,7 @@ func WithImagePullPolicy(pullPolicy corev1.PullPolicy) containerSpecOption {
 	}
 }
 
-func WithResources(resources []models.Resource) containerSpecOption {
+func WithResources(resources []kubernetes.Resource) containerSpecOption {
 	return func(container *corev1.Container) {
 		if len(resources) > 0 {
 			resReq := corev1.ResourceRequirements{}

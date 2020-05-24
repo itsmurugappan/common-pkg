@@ -6,13 +6,13 @@ import (
 
 	"knative.dev/pkg/ptr"
 
-	"github.com/itsmurugappan/common-pkg/common/models"
-	"github.com/itsmurugappan/common-pkg/kubernetes/corev1"
+	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
+	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes/corev1"
 )
 
 type jobSpecOption func(*batchv1.Job)
 
-func GetJob(spec models.JobSpec, options ...jobSpecOption) batchv1.Job {
+func GetJob(spec kubernetes.JobSpec, options ...jobSpecOption) batchv1.Job {
 	jobSpec := batchv1.Job{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Job",
@@ -28,7 +28,7 @@ func GetJob(spec models.JobSpec, options ...jobSpecOption) batchv1.Job {
 	return jobSpec
 }
 
-func WithPodSpecOptions(podSpec models.PodSpec, options ...corev1.PodSpecOption) jobSpecOption {
+func WithPodSpecOptions(podSpec kubernetes.PodSpec, options ...corev1.PodSpecOption) jobSpecOption {
 	return func(job *batchv1.Job) {
 		job.Spec.Template.Spec = corev1.GetPodSpec(podSpec, options...)
 	}
@@ -50,7 +50,7 @@ func WithBackoffLimit(backoffLimit int32) jobSpecOption {
 	}
 }
 
-func WithAnnotations(inAnnotations []models.KV) jobSpecOption {
+func WithAnnotations(inAnnotations []kubernetes.KV) jobSpecOption {
 	return func(job *batchv1.Job) {
 		if len(inAnnotations) > 0 && inAnnotations[0].Key != "" {
 			annotations := make(map[string]string)
@@ -58,11 +58,11 @@ func WithAnnotations(inAnnotations []models.KV) jobSpecOption {
 				annotations[ann.Key] = ann.Value
 			}
 			job.Spec.Template.ObjectMeta.Annotations = annotations
-		}		
+		}
 	}
 }
 
-func WithLabels(inLabels []models.KV) jobSpecOption {
+func WithLabels(inLabels []kubernetes.KV) jobSpecOption {
 	return func(job *batchv1.Job) {
 		if len(inLabels) > 0 && inLabels[0].Key != "" {
 			labels := make(map[string]string)
@@ -70,6 +70,6 @@ func WithLabels(inLabels []models.KV) jobSpecOption {
 				labels[label.Key] = label.Value
 			}
 			job.Spec.Template.ObjectMeta.Labels = labels
-		}		
+		}
 	}
 }

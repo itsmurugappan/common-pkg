@@ -6,31 +6,31 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/itsmurugappan/common-pkg/common/models"
-	teststubcorev1 "github.com/itsmurugappan/common-pkg/test/kubernetes/corev1"
+	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
+	teststubcorev1 "github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/corev1"
 )
 
 func TestEnvFromSecretorCM(t *testing.T) {
 	for _, tc := range []struct {
 		name  string
 		want  []corev1.EnvFromSource
-		input []models.EnvFrom
+		input []kubernetes.EnvFrom
 	}{{
 		name:  "test cm only - happy path",
 		want:  teststubcorev1.ConstructEnvFrom([]string{"cm1"}, []string{"CM"}),
-		input: []models.EnvFrom{{"cm1", "CM"}},
+		input: []kubernetes.EnvFrom{{"cm1", "CM"}},
 	}, {
 		name:  "test multiple cm without creating cm and expect error",
 		want:  teststubcorev1.ConstructEnvFrom([]string{"cm1", "cm2"}, []string{"CM", "CM"}),
-		input: []models.EnvFrom{{"cm1", "CM"}, {"cm2", "CM"}},
+		input: []kubernetes.EnvFrom{{"cm1", "CM"}, {"cm2", "CM"}},
 	}, {
 		name:  "test multiple secret w/o creating a secret and expect err",
 		want:  teststubcorev1.ConstructEnvFrom([]string{"s1", "s2"}, []string{"Secret", "Secret"}),
-		input: []models.EnvFrom{{"s1", "Secret"}, {"s2", "Secret"}},
+		input: []kubernetes.EnvFrom{{"s1", "Secret"}, {"s2", "Secret"}},
 	}, {
 		name:  "test multiple secret and cm without creating cm & secret - no error",
 		want:  teststubcorev1.ConstructEnvFrom([]string{"s1", "s2", "cm1", "cm2"}, []string{"Secret", "Secret", "CM", "CM"}),
-		input: []models.EnvFrom{{"s1", "Secret"}, {"s2", "Secret"}, {"cm1", "CM"}, {"cm2", "CM"}},
+		input: []kubernetes.EnvFrom{{"s1", "Secret"}, {"s2", "Secret"}, {"cm1", "CM"}, {"cm2", "CM"}},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
 			actEnvFrom := GetEnvfromSecretorCM(tc.input)

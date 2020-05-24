@@ -6,17 +6,17 @@ import (
 
 	batchv1 "k8s.io/api/batch/v1"
 
-	"github.com/itsmurugappan/common-pkg/common/models"
-	corev1 "github.com/itsmurugappan/common-pkg/kubernetes/corev1"
-	teststubbatchv1 "github.com/itsmurugappan/common-pkg/test/kubernetes/batchv1"
-	teststubcorev1 "github.com/itsmurugappan/common-pkg/test/kubernetes/corev1"
+	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
+	corev1 "github.com/itsmurugappan/kubernetes-resource-builder/kubernetes/corev1"
+	teststubbatchv1 "github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/batchv1"
+	teststubcorev1 "github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/corev1"
 )
 
 func TestGetPodSpec(t *testing.T) {
 	for _, tc := range []struct {
 		name         string
 		wantJob      batchv1.Job
-		inputModel   models.JobSpec
+		inputModel   kubernetes.JobSpec
 		inputOptions []jobSpecOption
 	}{{
 		name: "Job with All Options",
@@ -29,13 +29,13 @@ func TestGetPodSpec(t *testing.T) {
 			teststubbatchv1.WithLabels(map[string]string{"key1": "val1", "key2": "val2"}),
 			teststubbatchv1.WithBackoffLimit(int32(1)),
 		),
-		inputModel: models.JobSpec{Name: "foo"},
+		inputModel: kubernetes.JobSpec{Name: "foo"},
 		inputOptions: []jobSpecOption{
 			WithTTL(int32(100)),
-			WithAnnotations([]models.KV{{"key1", "val1"}, {"key2", "val2"}}),
-			WithLabels([]models.KV{{"key1", "val1"}, {"key2", "val2"}}),
+			WithAnnotations([]kubernetes.KV{{"key1", "val1"}, {"key2", "val2"}}),
+			WithLabels([]kubernetes.KV{{"key1", "val1"}, {"key2", "val2"}}),
 			WithBackoffLimit(int32(1)),
-			WithPodSpecOptions(models.PodSpec{},
+			WithPodSpecOptions(kubernetes.PodSpec{},
 				corev1.WithServiceAccount("admin-sa"),
 				corev1.WithRestartPolicy("Never")),
 		},
@@ -46,11 +46,11 @@ func TestGetPodSpec(t *testing.T) {
 				teststubcorev1.WithServiceAccount("admin-sa"),
 				teststubcorev1.WithRestartPolicy("Never")),
 		),
-		inputModel: models.JobSpec{Name: "foo"},
+		inputModel: kubernetes.JobSpec{Name: "foo"},
 		inputOptions: []jobSpecOption{
 			WithTTL(int32(0)),
 			WithBackoffLimit(int32(0)),
-			WithPodSpecOptions(models.PodSpec{},
+			WithPodSpecOptions(kubernetes.PodSpec{},
 				corev1.WithServiceAccount("admin-sa"),
 				corev1.WithRestartPolicy("Never")),
 		},

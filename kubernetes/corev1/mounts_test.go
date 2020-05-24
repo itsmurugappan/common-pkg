@@ -6,7 +6,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	teststubcorev1 "github.com/itsmurugappan/common-pkg/test/kubernetes/corev1"
+	teststubcorev1 "github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/corev1"
 )
 
 func TestGetVolumeSourcesandMounts(t *testing.T) {

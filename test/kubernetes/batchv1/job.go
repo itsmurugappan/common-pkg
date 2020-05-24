@@ -6,7 +6,7 @@ import (
 
 	"knative.dev/pkg/ptr"
 
-	"github.com/itsmurugappan/common-pkg/test/kubernetes/corev1"
+	"github.com/itsmurugappan/kubernetes-resource-builder/test/kubernetes/corev1"
 )
 
 type expectedJobSpecOption func(*batchv1.Job)

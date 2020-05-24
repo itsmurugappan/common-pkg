@@ -4,10 +4,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"strings"
 
-	"github.com/itsmurugappan/common-pkg/common/models"
+	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
 )
 
-func GetEnvfromSecretorCM(envFrom []models.EnvFrom) []corev1.EnvFromSource {
+func GetEnvfromSecretorCM(envFrom []kubernetes.EnvFrom) []corev1.EnvFromSource {
 	if len(envFrom) > 0 && envFrom[0].Name != "" {
 		var envs []corev1.EnvFromSource
 		for _, env := range envFrom {

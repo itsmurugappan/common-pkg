@@ -1,4 +1,4 @@
-module github.com/itsmurugappan/common-pkg
+module github.com/itsmurugappan/kubernetes-resource-builder
 
 go 1.13
 

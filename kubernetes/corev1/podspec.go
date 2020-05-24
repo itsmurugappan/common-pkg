@@ -3,12 +3,12 @@ package corev1
 import (
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/itsmurugappan/common-pkg/common/models"
+	"github.com/itsmurugappan/kubernetes-resource-builder/kubernetes"
 )
 
 type PodSpecOption func(*corev1.PodSpec)
 
-func GetPodSpec(spec models.PodSpec, options ...PodSpecOption) corev1.PodSpec {
+func GetPodSpec(spec kubernetes.PodSpec, options ...PodSpecOption) corev1.PodSpec {
 	podSpec := corev1.PodSpec{}
 
 	for _, fn := range options {
@@ -17,13 +17,13 @@ func GetPodSpec(spec models.PodSpec, options ...PodSpecOption) corev1.PodSpec {
 	return podSpec
 }
 
-func WithContainerOptions(cspec models.ContainerSpec, options ...containerSpecOption) PodSpecOption {
+func WithContainerOptions(cspec kubernetes.ContainerSpec, options ...containerSpecOption) PodSpecOption {
 	return func(podSpec *corev1.PodSpec) {
 		podSpec.Containers = append(podSpec.Containers, GetContainerSpec(cspec, options...))
 	}
 }
 
-func WithVolumes(containers []models.ContainerSpec) PodSpecOption {
+func WithVolumes(containers []kubernetes.ContainerSpec) PodSpecOption {
 	return func(spec *corev1.PodSpec) {
 		for _, container := range containers {
 			volList := GetVolumeSources(container.ConfigMaps, container.Secrets)

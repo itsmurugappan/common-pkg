@@ -1,8 +1,9 @@
 package corev1
 
 import (
-	corev1 "k8s.io/api/core/v1"
 	"strings"
+
+	corev1 "k8s.io/api/core/v1"
 
 	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
 )

@@ -1,8 +1,9 @@
 package batchv1
 
 import (
-	"gotest.tools/assert"
 	"testing"
+
+	"gotest.tools/assert"
 
 	batchv1 "k8s.io/api/batch/v1"
 

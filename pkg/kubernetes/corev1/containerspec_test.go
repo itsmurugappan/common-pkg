@@ -1,8 +1,9 @@
 package corev1
 
 import (
-	"gotest.tools/assert"
 	"testing"
+
+	"gotest.tools/assert"
 
 	corev1 "k8s.io/api/core/v1"
 
@@ -32,7 +33,7 @@ func TestGetContainerSpec(t *testing.T) {
 			teststubcorev1.WithResources(int64(10), int64(50), int64(128), int64(256))),
 		inputModel: kubernetes.ContainerSpec{Image: "docker.com/bar"},
 		inputOptions: []containerSpecOption{
-			WithEnv([]corev1.EnvVar{corev1.EnvVar{Name: "e1", Value: "v1"}, corev1.EnvVar{Name: "e2", Value: "v2"}}),
+			WithEnv([]corev1.EnvVar{{Name: "e1", Value: "v1"}, {Name: "e2", Value: "v2"}}),
 			WithEnvFromSecretorCM([]kubernetes.EnvFrom{{"c1", "CM"}, {"s1", "Secret"}}),
 			WithVolumeMounts(teststubcorev1.ConstructMounts([]string{"c1"}, []string{"/p1"}), teststubcorev1.ConstructMounts([]string{"s1"}, []string{"/p2"})),
 			WithPort(int32(8080)),
@@ -49,7 +50,7 @@ func TestGetContainerSpec(t *testing.T) {
 			teststubcorev1.WithImage("docker.com/bar")),
 		inputModel: kubernetes.ContainerSpec{Image: "docker.com/bar"},
 		inputOptions: []containerSpecOption{
-			WithEnv([]corev1.EnvVar{corev1.EnvVar{Name: "", Value: ""}}),
+			WithEnv([]corev1.EnvVar{{Name: "", Value: ""}}),
 			WithEnvFromSecretorCM([]kubernetes.EnvFrom{{"", ""}}),
 			WithVolumeMounts(teststubcorev1.ConstructMounts([]string{""}, []string{""}), teststubcorev1.ConstructMounts([]string{""}, []string{""})),
 			WithPort(int32(0)),

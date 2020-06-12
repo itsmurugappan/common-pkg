@@ -1,8 +1,9 @@
 package corev1
 
 import (
-	"gotest.tools/assert"
 	"testing"
+
+	"gotest.tools/assert"
 
 	corev1 "k8s.io/api/core/v1"
 
@@ -46,8 +47,8 @@ func TestGetEnvFromHTTPParam(t *testing.T) {
 		input map[string][]string
 	}{{
 		name:  "test 2 query params",
-		want:  []corev1.EnvVar{corev1.EnvVar{Name: "e1", Value: "v1;v2"}},
-		input: map[string][]string{"e1": []string{"v1", "v2"}},
+		want:  []corev1.EnvVar{{Name: "e1", Value: "v1;v2"}},
+		input: map[string][]string{"e1": {"v1", "v2"}},
 	}, {
 		name:  "test empty",
 		want:  nil,

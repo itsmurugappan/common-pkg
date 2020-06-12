@@ -1,8 +1,9 @@
 package corev1
 
 import (
-	"gotest.tools/assert"
 	"testing"
+
+	"gotest.tools/assert"
 
 	corev1 "k8s.io/api/core/v1"
 
@@ -37,14 +38,14 @@ func TestGetPodSpec(t *testing.T) {
 		inputModel: kubernetes.PodSpec{},
 		inputOptions: []PodSpecOption{
 			WithVolumes([]kubernetes.ContainerSpec{
-				kubernetes.ContainerSpec{
+				{
 					Secrets:    teststubcorev1.ConstructMounts([]string{"s1"}, []string{"/p2"}),
 					ConfigMaps: teststubcorev1.ConstructMounts([]string{"c1"}, []string{"/p1"}),
 				}}),
 			WithServiceAccount("admin-sa"),
 			WithRestartPolicy("Never"),
 			WithContainerOptions(kubernetes.ContainerSpec{Image: "docker.com/bar"},
-				WithEnv([]corev1.EnvVar{corev1.EnvVar{Name: "e1", Value: "v1"}, corev1.EnvVar{Name: "e2", Value: "v2"}}),
+				WithEnv([]corev1.EnvVar{{Name: "e1", Value: "v1"}, {Name: "e2", Value: "v2"}}),
 				WithEnvFromSecretorCM([]kubernetes.EnvFrom{{"c1", "CM"}, {"s1", "Secret"}}),
 				WithVolumeMounts(teststubcorev1.ConstructMounts([]string{"c1"}, []string{"/p1"}), teststubcorev1.ConstructMounts([]string{"s1"}, []string{"/p2"})),
 				WithPort(int32(8080)),
@@ -64,7 +65,7 @@ func TestGetPodSpec(t *testing.T) {
 		inputModel: kubernetes.PodSpec{},
 		inputOptions: []PodSpecOption{
 			WithContainerOptions(kubernetes.ContainerSpec{Image: "docker.com/bar"},
-				WithEnv([]corev1.EnvVar{corev1.EnvVar{Name: "", Value: ""}}),
+				WithEnv([]corev1.EnvVar{{Name: "", Value: ""}}),
 				WithEnvFromSecretorCM([]kubernetes.EnvFrom{{"", ""}}),
 				WithVolumeMounts(teststubcorev1.ConstructMounts([]string{""}, []string{""}), teststubcorev1.ConstructMounts([]string{""}, []string{""})),
 				WithPort(int32(0)),
@@ -92,11 +93,11 @@ func TestGetPodSpec(t *testing.T) {
 		inputModel: kubernetes.PodSpec{},
 		inputOptions: []PodSpecOption{
 			WithVolumes([]kubernetes.ContainerSpec{
-				kubernetes.ContainerSpec{
+				{
 					Secrets:    teststubcorev1.ConstructMounts([]string{"s1"}, []string{"/p2"}),
 					ConfigMaps: teststubcorev1.ConstructMounts([]string{"c1"}, []string{"/p1"}),
 				},
-				kubernetes.ContainerSpec{
+				{
 					Secrets:    teststubcorev1.ConstructMounts([]string{"s2"}, []string{"/p2"}),
 					ConfigMaps: teststubcorev1.ConstructMounts([]string{"c2"}, []string{"/p1"}),
 				}}),

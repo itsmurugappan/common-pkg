@@ -11,6 +11,7 @@ import (
 
 type containerSpecOption func(*corev1.Container)
 
+//GetContainerSpec construct container spec based on option provided
 func GetContainerSpec(spec kubernetes.ContainerSpec, options ...containerSpecOption) corev1.Container {
 
 	cSpec := corev1.Container{
@@ -22,6 +23,7 @@ func GetContainerSpec(spec kubernetes.ContainerSpec, options ...containerSpecOpt
 	return cSpec
 }
 
+//WithEnv attach env variables
 func WithEnv(envs []corev1.EnvVar) containerSpecOption {
 	return func(container *corev1.Container) {
 		if len(envs) > 0 && envs[0].Name != "" {
@@ -30,6 +32,7 @@ func WithEnv(envs []corev1.EnvVar) containerSpecOption {
 	}
 }
 
+//WithEnvFromSecretorCM attach secret/cm as env
 func WithEnvFromSecretorCM(envFromSecretorCM []kubernetes.EnvFrom) containerSpecOption {
 	return func(container *corev1.Container) {
 		envList := GetEnvfromSecretorCM(envFromSecretorCM)
@@ -37,6 +40,7 @@ func WithEnvFromSecretorCM(envFromSecretorCM []kubernetes.EnvFrom) containerSpec
 	}
 }
 
+//WithVolumeMounts mount cm/secret as volume
 func WithVolumeMounts(cms []corev1.VolumeMount, secrets []corev1.VolumeMount) containerSpecOption {
 	return func(container *corev1.Container) {
 		mountList := GetVolumeMounts(cms, secrets)
@@ -44,6 +48,7 @@ func WithVolumeMounts(cms []corev1.VolumeMount, secrets []corev1.VolumeMount) co
 	}
 }
 
+//WithPort appends the container port
 func WithPort(port int32) containerSpecOption {
 	return func(container *corev1.Container) {
 		if port > 0 {
@@ -54,6 +59,7 @@ func WithPort(port int32) containerSpecOption {
 	}
 }
 
+//WithSecurityContext attached pod security policy
 func WithSecurityContext(user int64) containerSpecOption {
 	return func(container *corev1.Container) {
 		if user > 0 {
@@ -64,6 +70,7 @@ func WithSecurityContext(user int64) containerSpecOption {
 	}
 }
 
+//WithName - name of the container
 func WithName(name string) containerSpecOption {
 	return func(container *corev1.Container) {
 		if name != "" {
@@ -72,6 +79,7 @@ func WithName(name string) containerSpecOption {
 	}
 }
 
+//WithCommand - container startup command
 func WithCommand(cmd []string) containerSpecOption {
 	return func(container *corev1.Container) {
 		if len(cmd) > 0 && cmd[0] != "" {
@@ -80,6 +88,7 @@ func WithCommand(cmd []string) containerSpecOption {
 	}
 }
 
+//WithImagePullPolicy - image pull policy
 func WithImagePullPolicy(pullPolicy corev1.PullPolicy) containerSpecOption {
 	return func(container *corev1.Container) {
 		if pullPolicy != "" {
@@ -88,6 +97,7 @@ func WithImagePullPolicy(pullPolicy corev1.PullPolicy) containerSpecOption {
 	}
 }
 
+//WithResources - container resource constraints
 func WithResources(resources []kubernetes.Resource) containerSpecOption {
 	return func(container *corev1.Container) {
 		if len(resources) > 0 {

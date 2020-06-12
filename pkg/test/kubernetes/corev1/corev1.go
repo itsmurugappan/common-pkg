@@ -37,6 +37,30 @@ func ConstructSecret(ns string, name string) *corev1.Secret {
 	}
 }
 
+type expectedSecretOption func(*corev1.Secret)
+
+func GetSecret(ns, name string, options ...expectedSecretOption) *corev1.Secret {
+	secret := ConstructSecret(ns, name)
+
+	for _, fn := range options {
+		fn(secret)
+	}
+
+	return secret
+}
+
+func WithSecretType(secretType string) expectedSecretOption {
+	return func(secret *corev1.Secret) {
+		secret.Type = corev1.SecretType(secretType)
+	}
+}
+
+func WithSecretAnnotations(annotations map[string]string) expectedSecretOption {
+	return func(secret *corev1.Secret) {
+		secret.ObjectMeta.Annotations = annotations
+	}
+}
+
 func ConstructConfigMap(ns string, name string) *corev1.ConfigMap {
 	return &corev1.ConfigMap{
 		TypeMeta:   metav1.TypeMeta{Kind: "ConfigMap", APIVersion: "v1"},
@@ -97,4 +121,30 @@ func ConstructMergedVols(cmVolNames []string, secretVolNames []string) []corev1.
 	vols = append(vols, ConstructCMVols(cmVolNames)...)
 	vols = append(vols, ConstructSecretVols(secretVolNames)...)
 	return vols
+}
+
+func GetServiceAccount(name, namespace string) *corev1.ServiceAccount {
+	return &corev1.ServiceAccount{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ServiceAccount",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+	}
+}
+
+func GetNS(name string, labels map[string]string) *corev1.Namespace {
+	return &corev1.Namespace{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Namespace",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   name,
+			Labels: labels,
+		},
+	}
 }

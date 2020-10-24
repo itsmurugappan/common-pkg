@@ -22,6 +22,7 @@ type ContainerSpec struct {
 	User              int64
 	EnvFromSecretorCM []EnvFrom
 	Cmd               []string
+	ServiceAccount    string
 }
 
 //ContainerSpec - kubernetes core/v1/pod

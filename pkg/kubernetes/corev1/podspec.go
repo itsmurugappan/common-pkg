@@ -17,7 +17,7 @@ func GetPodSpec(spec kubernetes.PodSpec, options ...PodSpecOption) corev1.PodSpe
 	return podSpec
 }
 
-func WithContainerOptions(cspec kubernetes.ContainerSpec, options ...containerSpecOption) PodSpecOption {
+func WithContainerOptions(cspec kubernetes.ContainerSpec, options ...ContainerSpecOption) PodSpecOption {
 	return func(podSpec *corev1.PodSpec) {
 		podSpec.Containers = append(podSpec.Containers, GetContainerSpec(cspec, options...))
 	}

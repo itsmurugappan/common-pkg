@@ -43,9 +43,7 @@ func WithTTL(ttl int32) expectedJobSpecOption {
 
 func WithBackoffLimit(backoffLimit int32) expectedJobSpecOption {
 	return func(job *batchv1.Job) {
-		if backoffLimit > int32(0) {
-			job.Spec.BackoffLimit = ptr.Int32(backoffLimit)
-		}
+		job.Spec.BackoffLimit = ptr.Int32(backoffLimit)
 	}
 }
 

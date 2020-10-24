@@ -42,7 +42,7 @@ func TestCheckIfCMExist(t *testing.T) {
 		runtimeObjects: []runtime.Object{teststubcorev1.ConstructConfigMap("baz", "cm1")},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			act := CheckIfCMExist(tc.input[0], tc.input[1], testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1())
+			act := (&coreClient{tcorev1: testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1()}).CheckIfCMExist(tc.input[0], tc.input[1])
 			assert.DeepEqual(t, &tc.want, &act)
 		})
 	}
@@ -76,7 +76,7 @@ func TestCheckIfSecretExist(t *testing.T) {
 		runtimeObjects: []runtime.Object{teststubcorev1.ConstructSecret("baz", "s1")},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			act := CheckIfSecretExist(tc.input[0], tc.input[1], testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1())
+			act := (&coreClient{tcorev1: testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1()}).CheckIfSecretExist(tc.input[0], tc.input[1])
 			assert.DeepEqual(t, &tc.want, &act)
 		})
 	}
@@ -126,7 +126,7 @@ func TestCheckCMMounts(t *testing.T) {
 		},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			err := CheckCMMounts(tc.ns, testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1(), tc.input)
+			err := (&coreClient{tcorev1: testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1()}).CheckCMMounts(tc.ns, tc.input)
 			if tc.want == "" {
 				assert.NilError(t, err)
 			} else {
@@ -180,7 +180,7 @@ func TestCheckSecretMounts(t *testing.T) {
 		},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			err := CheckSecretMounts(tc.ns, testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1(), tc.input)
+			err := (&coreClient{tcorev1: testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1()}).CheckSecretMounts(tc.ns, tc.input)
 			if tc.want == "" {
 				assert.NilError(t, err)
 			} else {
@@ -234,7 +234,7 @@ func TestEnvFromResources(t *testing.T) {
 		},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			err := CheckEnvFromResources(tc.ns, testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1(), tc.input)
+			err := (&coreClient{tcorev1: testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1()}).CheckEnvFromResources(tc.ns, tc.input)
 			if tc.want == "" {
 				assert.NilError(t, err)
 			} else {
@@ -257,7 +257,7 @@ func TestGetSecrets(t *testing.T) {
 		runtimeObjects: []runtime.Object{teststubcorev1.ConstructSecret("foo", "s1")},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			secret, err := GetSecrets(tc.input[0], tc.input[1], testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1())
+			secret, err := (&coreClient{tcorev1: testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1()}).GetSecrets(tc.input[0], tc.input[1])
 			assert.NilError(t, err)
 			assert.DeepEqual(t, tc.want, secret)
 		})
@@ -296,7 +296,7 @@ func TestGetSAToken(t *testing.T) {
 		runtimeObjects: []runtime.Object{},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			secret, err := GetSAToken(tc.input[0], tc.input[1], testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1())
+			secret, err := (&coreClient{tcorev1: testclient.NewSimpleClientset((tc.runtimeObjects)...).CoreV1()}).GetSAToken(tc.input[0], tc.input[1])
 			if tc.isErr {
 				assert.Error(t, err, tc.want)
 			} else {

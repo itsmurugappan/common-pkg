@@ -17,8 +17,8 @@ func TestGetPodSpec(t *testing.T) {
 	for _, tc := range []struct {
 		name         string
 		wantJob      batchv1.Job
-		inputModel   kubernetes.JobSpec
-		inputOptions []jobSpecOption
+		inputName    string
+		inputOptions []JobSpecOption
 	}{{
 		name: "Job with All Options",
 		wantJob: teststubbatchv1.ConstructExpectedJobSpec(
@@ -30,8 +30,8 @@ func TestGetPodSpec(t *testing.T) {
 			teststubbatchv1.WithLabels(map[string]string{"key1": "val1", "key2": "val2"}),
 			teststubbatchv1.WithBackoffLimit(int32(1)),
 		),
-		inputModel: kubernetes.JobSpec{Name: "foo"},
-		inputOptions: []jobSpecOption{
+		inputName: "foo",
+		inputOptions: []JobSpecOption{
 			WithTTL(int32(100)),
 			WithAnnotations([]kubernetes.KV{{"key1", "val1"}, {"key2", "val2"}}),
 			WithLabels([]kubernetes.KV{{"key1", "val1"}, {"key2", "val2"}}),
@@ -46,9 +46,10 @@ func TestGetPodSpec(t *testing.T) {
 			teststubbatchv1.WithPodSpecOptions(
 				teststubcorev1.WithServiceAccount("admin-sa"),
 				teststubcorev1.WithRestartPolicy("Never")),
+			teststubbatchv1.WithBackoffLimit(int32(0)),
 		),
-		inputModel: kubernetes.JobSpec{Name: "foo"},
-		inputOptions: []jobSpecOption{
+		inputName: "foo",
+		inputOptions: []JobSpecOption{
 			WithTTL(int32(0)),
 			WithBackoffLimit(int32(0)),
 			WithPodSpecOptions(kubernetes.PodSpec{},
@@ -57,7 +58,7 @@ func TestGetPodSpec(t *testing.T) {
 		},
 	}} {
 		t.Run(tc.name, func(t *testing.T) {
-			actJob := GetJob(tc.inputModel, tc.inputOptions...)
+			actJob := GetJob(tc.inputName, tc.inputOptions...)
 			assert.DeepEqual(t, &tc.wantJob, &actJob)
 		})
 	}

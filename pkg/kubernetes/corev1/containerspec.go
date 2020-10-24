@@ -1,19 +1,34 @@
 package corev1
 
 import (
+	"context"
+
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 
 	"knative.dev/pkg/ptr"
 
 	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
 )
 
-type containerSpecOption func(*corev1.Container)
+type coreClient struct {
+	tcorev1 typedcorev1.CoreV1Interface
+	ctx     context.Context
+}
+
+func Client(c context.Context) *coreClient {
+	cs := kubernetes.KubernetesCSFromContext(c)
+	return &coreClient{
+		tcorev1: cs.CoreV1(),
+		ctx:     c,
+	}
+}
+
+type ContainerSpecOption func(*corev1.Container)
 
 //GetContainerSpec construct container spec based on option provided
-func GetContainerSpec(spec kubernetes.ContainerSpec, options ...containerSpecOption) corev1.Container {
-
+func GetContainerSpec(spec kubernetes.ContainerSpec, options ...ContainerSpecOption) corev1.Container {
 	cSpec := corev1.Container{
 		Image: spec.Image,
 	}
@@ -24,7 +39,7 @@ func GetContainerSpec(spec kubernetes.ContainerSpec, options ...containerSpecOpt
 }
 
 //WithEnv attach env variables
-func WithEnv(envs []corev1.EnvVar) containerSpecOption {
+func WithEnv(envs []corev1.EnvVar) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		if len(envs) > 0 && envs[0].Name != "" {
 			container.Env = append(container.Env, envs...)
@@ -33,7 +48,7 @@ func WithEnv(envs []corev1.EnvVar) containerSpecOption {
 }
 
 //WithEnvFromSecretorCM attach secret/cm as env
-func WithEnvFromSecretorCM(envFromSecretorCM []kubernetes.EnvFrom) containerSpecOption {
+func WithEnvFromSecretorCM(envFromSecretorCM []kubernetes.EnvFrom) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		envList := GetEnvfromSecretorCM(envFromSecretorCM)
 		container.EnvFrom = envList
@@ -41,7 +56,7 @@ func WithEnvFromSecretorCM(envFromSecretorCM []kubernetes.EnvFrom) containerSpec
 }
 
 //WithVolumeMounts mount cm/secret as volume
-func WithVolumeMounts(cms []corev1.VolumeMount, secrets []corev1.VolumeMount) containerSpecOption {
+func WithVolumeMounts(cms []corev1.VolumeMount, secrets []corev1.VolumeMount) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		mountList := GetVolumeMounts(cms, secrets)
 		container.VolumeMounts = mountList
@@ -49,7 +64,7 @@ func WithVolumeMounts(cms []corev1.VolumeMount, secrets []corev1.VolumeMount) co
 }
 
 //WithPort appends the container port
-func WithPort(port int32) containerSpecOption {
+func WithPort(port int32) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		if port > 0 {
 			container.Ports = append(container.Ports, corev1.ContainerPort{
@@ -60,7 +75,7 @@ func WithPort(port int32) containerSpecOption {
 }
 
 //WithSecurityContext attached pod security policy
-func WithSecurityContext(user int64) containerSpecOption {
+func WithSecurityContext(user int64) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		if user > 0 {
 			container.SecurityContext = &corev1.SecurityContext{
@@ -71,7 +86,7 @@ func WithSecurityContext(user int64) containerSpecOption {
 }
 
 //WithName - name of the container
-func WithName(name string) containerSpecOption {
+func WithName(name string) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		if name != "" {
 			container.Name = name
@@ -80,7 +95,7 @@ func WithName(name string) containerSpecOption {
 }
 
 //WithCommand - container startup command
-func WithCommand(cmd []string) containerSpecOption {
+func WithCommand(cmd []string) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		if len(cmd) > 0 && cmd[0] != "" {
 			container.Command = cmd
@@ -89,7 +104,7 @@ func WithCommand(cmd []string) containerSpecOption {
 }
 
 //WithImagePullPolicy - image pull policy
-func WithImagePullPolicy(pullPolicy corev1.PullPolicy) containerSpecOption {
+func WithImagePullPolicy(pullPolicy corev1.PullPolicy) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		if pullPolicy != "" {
 			container.ImagePullPolicy = pullPolicy
@@ -98,7 +113,7 @@ func WithImagePullPolicy(pullPolicy corev1.PullPolicy) containerSpecOption {
 }
 
 //WithResources - container resource constraints
-func WithResources(resources []kubernetes.Resource) containerSpecOption {
+func WithResources(resources []kubernetes.Resource) ContainerSpecOption {
 	return func(container *corev1.Container) {
 		if len(resources) > 0 {
 			resReq := corev1.ResourceRequirements{}

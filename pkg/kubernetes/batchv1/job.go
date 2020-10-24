@@ -1,26 +1,55 @@
 package batchv1
 
 import (
+	"context"
+
 	batchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	typedbatchv1 "k8s.io/client-go/kubernetes/typed/batch/v1"
 
+	"knative.dev/pkg/kmeta"
 	"knative.dev/pkg/ptr"
 
 	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes"
 	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/kubernetes/corev1"
+	"github.com/itsmurugappan/kubernetes-resource-builder/pkg/transform"
 )
 
-type jobSpecOption func(*batchv1.Job)
+type JobSpecOption func(*batchv1.Job)
 
-//GetJob constructs the job spec to be created based on the options provided
-func GetJob(spec kubernetes.JobSpec, options ...jobSpecOption) batchv1.Job {
+type batchClient struct {
+	tbatchv1 typedbatchv1.BatchV1Interface
+	ctx      context.Context
+}
+
+func Client(c context.Context) *batchClient {
+	cs := kubernetes.KubernetesCSFromContext(c)
+	return &batchClient{
+		tbatchv1: cs.BatchV1(),
+		ctx:      c,
+	}
+}
+
+func (c *batchClient) CreateJob(ns string, job *batchv1.Job, watch bool) (*batchv1.Job, error) {
+	return c.tbatchv1.Jobs(ns).Create(c.ctx, job, metav1.CreateOptions{})
+}
+
+func (c *batchClient) GetJobStatus(ns, jobName string) (*batchv1.JobStatus, error) {
+	job, err := c.tbatchv1.Jobs(ns).Get(c.ctx, jobName, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return &job.Status, nil
+}
+
+func GetJob(name string, options ...JobSpecOption) batchv1.Job {
 	jobSpec := batchv1.Job{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Job",
 			APIVersion: "batch/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: spec.Name,
+			Name: name,
 		}}
 
 	for _, fn := range options {
@@ -29,15 +58,13 @@ func GetJob(spec kubernetes.JobSpec, options ...jobSpecOption) batchv1.Job {
 	return jobSpec
 }
 
-//WithPodSpecOptions attach pod spec options
-func WithPodSpecOptions(podSpec kubernetes.PodSpec, options ...corev1.PodSpecOption) jobSpecOption {
+func WithPodSpecOptions(podSpec kubernetes.PodSpec, options ...corev1.PodSpecOption) JobSpecOption {
 	return func(job *batchv1.Job) {
 		job.Spec.Template.Spec = corev1.GetPodSpec(podSpec, options...)
 	}
 }
 
-//WithTTL attach TTL options
-func WithTTL(ttl int32) jobSpecOption {
+func WithTTL(ttl int32) JobSpecOption {
 	return func(job *batchv1.Job) {
 		if ttl > int32(0) {
 			job.Spec.TTLSecondsAfterFinished = ptr.Int32(ttl)
@@ -45,37 +72,34 @@ func WithTTL(ttl int32) jobSpecOption {
 	}
 }
 
-//WithBackoffLimit attach backoffLimit
-func WithBackoffLimit(backoffLimit int32) jobSpecOption {
+func WithParallelism(instances int32) JobSpecOption {
 	return func(job *batchv1.Job) {
-		if backoffLimit > int32(0) {
-			job.Spec.BackoffLimit = ptr.Int32(backoffLimit)
+		if instances > int32(0) {
+			job.Spec.Parallelism = ptr.Int32(instances)
 		}
 	}
 }
 
-//WithAnnotations attach Annotations
-func WithAnnotations(inAnnotations []kubernetes.KV) jobSpecOption {
+func WithBackoffLimit(backoffLimit int32) JobSpecOption {
 	return func(job *batchv1.Job) {
-		if len(inAnnotations) > 0 && inAnnotations[0].Key != "" {
-			annotations := make(map[string]string)
-			for _, ann := range inAnnotations {
-				annotations[ann.Key] = ann.Value
-			}
-			job.Spec.Template.ObjectMeta.Annotations = annotations
-		}
+		job.Spec.BackoffLimit = ptr.Int32(backoffLimit)
 	}
 }
 
-//WithLabels attach Labels
-func WithLabels(inLabels []kubernetes.KV) jobSpecOption {
+func WithAnnotations(inAnnotations []kubernetes.KV) JobSpecOption {
 	return func(job *batchv1.Job) {
-		if len(inLabels) > 0 && inLabels[0].Key != "" {
-			labels := make(map[string]string)
-			for _, label := range inLabels {
-				labels[label.Key] = label.Value
-			}
-			job.Spec.Template.ObjectMeta.Labels = labels
-		}
+		job.Spec.Template.ObjectMeta.Annotations = transform.GetStringMap(inAnnotations, nil)
+	}
+}
+
+func WithLabels(inLabels []kubernetes.KV) JobSpecOption {
+	return func(job *batchv1.Job) {
+		job.Spec.Template.ObjectMeta.Labels = transform.GetStringMap(inLabels, nil)
+	}
+}
+
+func WithOwnerReference(obj kmeta.OwnerRefable) JobSpecOption {
+	return func(job *batchv1.Job) {
+		job.Spec.Template.ObjectMeta.OwnerReferences = []metav1.OwnerReference{*metav1.NewControllerRef(obj.GetObjectMeta(), obj.GetGroupVersionKind())}
 	}
 }

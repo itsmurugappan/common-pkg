@@ -16,7 +16,7 @@ func TestGetContainerSpec(t *testing.T) {
 		name          string
 		wantContainer corev1.Container
 		inputModel    kubernetes.ContainerSpec
-		inputOptions  []containerSpecOption
+		inputOptions  []ContainerSpecOption
 	}{{
 		name: "Container will All Options",
 		wantContainer: teststubcorev1.ConstructExpectedContainerSpec(
@@ -32,7 +32,7 @@ func TestGetContainerSpec(t *testing.T) {
 			teststubcorev1.WithImagePullPolicy(corev1.PullAlways),
 			teststubcorev1.WithResources(int64(10), int64(50), int64(128), int64(256))),
 		inputModel: kubernetes.ContainerSpec{Image: "docker.com/bar"},
-		inputOptions: []containerSpecOption{
+		inputOptions: []ContainerSpecOption{
 			WithEnv([]corev1.EnvVar{{Name: "e1", Value: "v1"}, {Name: "e2", Value: "v2"}}),
 			WithEnvFromSecretorCM([]kubernetes.EnvFrom{{"c1", "CM"}, {"s1", "Secret"}}),
 			WithVolumeMounts(teststubcorev1.ConstructMounts([]string{"c1"}, []string{"/p1"}), teststubcorev1.ConstructMounts([]string{"s1"}, []string{"/p2"})),
@@ -49,7 +49,7 @@ func TestGetContainerSpec(t *testing.T) {
 		wantContainer: teststubcorev1.ConstructExpectedContainerSpec(
 			teststubcorev1.WithImage("docker.com/bar")),
 		inputModel: kubernetes.ContainerSpec{Image: "docker.com/bar"},
-		inputOptions: []containerSpecOption{
+		inputOptions: []ContainerSpecOption{
 			WithEnv([]corev1.EnvVar{{Name: "", Value: ""}}),
 			WithEnvFromSecretorCM([]kubernetes.EnvFrom{{"", ""}}),
 			WithVolumeMounts(teststubcorev1.ConstructMounts([]string{""}, []string{""}), teststubcorev1.ConstructMounts([]string{""}, []string{""})),
@@ -65,7 +65,7 @@ func TestGetContainerSpec(t *testing.T) {
 			teststubcorev1.WithImage("docker.com/bar"),
 			teststubcorev1.WithResources(int64(10), int64(0), int64(0), int64(256))),
 		inputModel: kubernetes.ContainerSpec{Image: "docker.com/bar"},
-		inputOptions: []containerSpecOption{
+		inputOptions: []ContainerSpecOption{
 			WithResources([]kubernetes.Resource{{"Requests", int64(10), int64(0)}, {"Limit", int64(0), int64(256)}}),
 		},
 	}, {
@@ -74,7 +74,7 @@ func TestGetContainerSpec(t *testing.T) {
 			teststubcorev1.WithImage("docker.com/bar"),
 			teststubcorev1.WithResources(int64(10), int64(0), int64(128), int64(0))),
 		inputModel: kubernetes.ContainerSpec{Image: "docker.com/bar"},
-		inputOptions: []containerSpecOption{
+		inputOptions: []ContainerSpecOption{
 			WithResources([]kubernetes.Resource{{"Requests", int64(10), int64(128)}, {"Limit", int64(0), int64(0)}}),
 		},
 	}, {
@@ -83,7 +83,7 @@ func TestGetContainerSpec(t *testing.T) {
 			teststubcorev1.WithImage("docker.com/bar"),
 			teststubcorev1.WithResources(int64(0), int64(10), int64(0), int64(128))),
 		inputModel: kubernetes.ContainerSpec{Image: "docker.com/bar"},
-		inputOptions: []containerSpecOption{
+		inputOptions: []ContainerSpecOption{
 			WithResources([]kubernetes.Resource{{"Requests", int64(0), int64(0)}, {"Limit", int64(10), int64(128)}}),
 		},
 	}} {

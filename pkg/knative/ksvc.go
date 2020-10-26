@@ -1,4 +1,4 @@
-package servingv1
+package knative
 
 import (
 	"context"
@@ -27,6 +27,6 @@ func Client(c context.Context) *kClient {
 }
 
 //GetKService returns a knative service object for the name and namespaces
-func (c kClient) GetKService(ns string, name string) (*servingv1.Service, error) {
+func (c kClient) GetKService(ns, name string) (*servingv1.Service, error) {
 	return c.tservingv1.Services(ns).Get(c.ctx, name, metav1.GetOptions{})
 }

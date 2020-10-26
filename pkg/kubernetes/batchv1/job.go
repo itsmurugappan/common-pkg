@@ -100,6 +100,8 @@ func WithLabels(inLabels []kubernetes.KV) JobSpecOption {
 
 func WithOwnerReference(obj kmeta.OwnerRefable) JobSpecOption {
 	return func(job *batchv1.Job) {
-		job.Spec.Template.ObjectMeta.OwnerReferences = []metav1.OwnerReference{*metav1.NewControllerRef(obj.GetObjectMeta(), obj.GetGroupVersionKind())}
+		ownerRef := metav1.NewControllerRef(obj.GetObjectMeta(), obj.GetGroupVersionKind())
+		ownerRef.BlockOwnerDeletion = ptr.Bool(false)
+		job.Spec.Template.ObjectMeta.OwnerReferences = []metav1.OwnerReference{*ownerRef}
 	}
 }
